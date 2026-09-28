@@ -29,6 +29,14 @@ Do not begin implementation against an unapproved local assumption when the requ
 - Employee Console for tour and inventory operations
 - Integration support and E2E scenarios
 
+## Cross-repository access
+
+- `WonhoOne/ai-console` is this Agent's writable implementation area.
+- `WonhoOne/backend` and `WonhoOne/frontend` are **read-only by default**.
+- Their code may be inspected for API usage, integration debugging, and impact analysis.
+- Do not modify, commit to, or open implementation PRs against those repositories unless their Owner or the team explicitly delegates the task.
+- If another repository needs a change, create/request an Issue for its Owner with the required behavior, contract impact, and reproduction context.
+
 ## Non-negotiable rules
 
 - Voice scope is limited-command based, not free-form travel consultation unless the docs baseline changes.
