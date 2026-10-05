@@ -1,74 +1,76 @@
-# AI Voice / Employee Console Agent Instructions
+# ai-console Legacy Repository Agent Instructions
 
-This repository implements **Voice Recognition, Employee Console, and integration-related client work**.
+`WonhoOne/ai-console` is a **historical / legacy repository**, retained for historical material and existing artifacts. It originally hosted or planned combined AI Voice, Employee Console, and integration-related client work. That assignment is historical; this repository is no longer the default target for new active feature implementation.
 
-`WonhoOne/docs` **main** is the approved common SSOT. A docs feature branch is a proposal. Do not implement against the v0.1.1 proposal until it is merged into `docs/main`; use the currently approved baseline on `docs/main` until then.
+Preserve historical files and submitted proposal records. Do not delete, rename, archive, or repurpose the repository in this guidance reconciliation.
 
-## Mandatory reading before implementation
+## Approved shared source of truth
 
-Before writing or modifying code, read the latest approved documents in `WonhoOne/docs`. The following v0.1.1 list applies after its merge into `docs/main`; until then follow the approved `docs/main` mandatory reading list:
+[`WonhoOne/docs/main`](https://github.com/WonhoOne/docs/tree/main) is the approved shared SSOT. Always read the latest approved baseline and contracts from `docs/main` rather than relying on version numbers embedded in this legacy repository. Feature branches and unmerged PRs remain proposals.
 
-1. `baseline/BASELINE-v0.1.1.md`
-2. `requirements/requirements.md`
-3. `requirements/product-catalog.md`
-4. `requirements/domain-model.md`
-5. `requirements/business-rules.md`
-6. `requirements/non-functional-requirements.md`
-7. `architecture/system-architecture.md`
-8. `architecture/repository-responsibilities.md`
-9. `architecture/voice-contract.md`
-10. `api/api-spec-draft.md`
+Reconciliation reference: `docs/main@c5b763253bb4acd8e4e4c6db0a736be8f1c247fc`, including Baseline v0.2-era contracts and the responsibility/location reconciliation merged in docs PRs #11 and #12. This reference is not a permanent baseline pin. Earlier baselines are historical records, not pending implementation gates.
+
+Before repository work, read the latest approved Baseline and the mandatory reading list in `docs/main/AGENTS.md`, including:
+
+1. `architecture/repository-responsibilities.md`
+2. `architecture/voice-contract.md`
+3. `architecture/system-architecture.md`
+4. `requirements/requirements.md`
+5. `requirements/product-catalog.md`
+6. `requirements/domain-model.md`
+7. `requirements/business-rules.md`
+8. `requirements/non-functional-requirements.md`
+9. `api/api-spec-draft.md`
+10. `database/erd-draft.md`
 11. `CONTRIBUTING.md`
 12. `AGENTS.md`
 
-Docs repository: https://github.com/WonhoOne/docs
+## Current implementation ownership and locations
 
-Do not begin implementation against an unapproved local assumption when the required baseline is not yet available on the approved docs branch.
+- **이한결:** Backend, Database, Shared docs management, AWS / SOLAPI runtime, and AI Voice.
+- **김태우:** Customer Frontend, Employee Console, and Frontend ↔ Backend live integration.
+- **주원호:** no current primary implementation scope.
 
-## Repository responsibilities
+Active AI Voice implementation lives in `WonhoOne/frontend`, limited to:
 
-- Speech-to-Text integration / PoC
-- Restricted travel command interpretation
-- Voice ↔ Customer flow / Backend API connection
-- Employee Console for tour and inventory operations
-- Integration support and E2E scenarios
+- `src/integrations/voice/**` — browser/STT runtime, normalization, interpretation/parser, matcher, and canonical `VoiceCommand` implementation.
+- `src/features/voice-bridge/**` — canonical commands connected to existing Frontend Feature actions/queries/mutations and `ReservationDraft` state, coordinated with 김태우.
 
-## Cross-repository access
+Employee Console belongs to **김태우's current Frontend track in `WonhoOne/frontend`**. General Frontend ownership remains 김태우; the Voice assignment does not grant write access outside those two directories. Follow current `docs/main` for ownership and handoff.
 
-- `WonhoOne/ai-console` is this Agent's writable implementation area.
-- `WonhoOne/backend` and `WonhoOne/frontend` are **read-only by default**.
-- Their code may be inspected for API usage, integration debugging, and impact analysis.
-- Do not modify, commit to, or open implementation PRs against those repositories unless their Owner or the team explicitly delegates the task.
-- If another repository needs a change, create/request an Issue for its Owner with the required behavior, contract impact, and reproduction context.
+## Historical assignments and open work
 
-## Non-negotiable rules
+Older documents, issues, and PRs may reflect superseded combined Voice + Employee Console assignments. Preserve them as history; do not treat them as current implementation authorization. The newest ownership comments and approved `docs/main` govern current work. If a newer decision conflicts with approved guidance, stop and surface the conflict.
 
-- Voice scope is limited-command based, not free-form travel consultation unless the docs baseline changes.
-- Use approved Backend APIs. Do not bypass Backend services.
-- Do not access MySQL directly.
-- Do not reimplement Backend business rules as the final authority.
-- Do not invent new Voice commands as shared contract without updating the Voice Contract.
-- Do not invent endpoint paths or request/response structures.
-- Do not resolve TBD items by assumption.
-- If a required command or API is missing, surface the gap and propose the docs change first.
-- If code and docs conflict, stop and surface the conflict.
+PR #5's Employee Console work-order context is historical/superseded unless separately handled by the Frontend owner. Do not use it as Voice implementation evidence. This reconciliation does not modify, close, merge, or rewrite PR #5 or its history.
 
-## Voice processing principle
+## Cross-repository access and scope
+
+- Work here is historical-material/artifact maintenance or explicitly scoped guidance work. Do not implement new Frontend, Voice, Employee Console, or Backend features here by default.
+- `WonhoOne/docs`, `WonhoOne/frontend`, and `WonhoOne/backend` may be inspected read-only for contracts, integration analysis, and handoff context.
+- This guidance task permits writes only to this repository's `AGENTS.md` and `README.md`; it does not authorize implementation code or changes in other repositories.
+- If active implementation or another repository needs changes, hand them off to its current Owner with the required behavior and contract impact. Cross-repository writes require explicit Owner/team delegation for that scope; follow `docs/main/architecture/repository-responsibilities.md`.
+- Shared contract changes require a docs proposal, impact review, and approval before implementation. Do not invent requirements, commands, endpoint paths, or DTOs, or resolve TBD items by assumption.
+
+## Preserved Voice and Backend boundaries
+
+The approved semantics remain unchanged (FR-12, FR-13, BR-12, BR-26, BR-28):
 
 ```text
 Speech
-→ Speech-to-Text
-→ Command interpretation
-→ Customer GUI state update and/or Backend API
-→ Backend validation
+→ STT
+→ command interpretation
+→ canonical VoiceCommand
+→ Frontend voice bridge
+→ existing Feature action/query/mutation boundary
+→ Backend validation where applicable
 ```
 
-## PR expectations
+- Voice may create or mutate `ReservationDraft`. Voice MUST NOT automatically submit/create a Reservation or perform automatic Reservation POST. After review, the user explicitly submits through the GUI.
+- Voice remains limited to approved commands, with GUI fallback. It does not perform authentication credential entry, cancellation/refund/payment, free-form consultation, or Customer Voice mutation of Employee data.
+- Use existing Frontend Feature boundaries and approved Backend APIs. Do not access MySQL directly, bypass Backend services, or reimplement Backend business rules as final authority.
+- Backend retains final validation authority. If code and approved docs conflict, stop and surface the conflict.
 
-Every implementation PR should identify:
+## PR expectations for guidance maintenance
 
-- related Requirement IDs
-- Voice command(s) or Employee flow affected
-- Backend API endpoints used
-- E2E / integration test evidence
-- whether any shared contract changed
+Use a scoped branch and PR. State related requirements or the responsibility gate, approved SSOT reference, files changed, affected contracts, and validation evidence. For this reconciliation, repository responsibility decisions, Voice semantics, public API, and business/domain rules are unchanged. Review the diff, run `git diff --check`, and verify only `AGENTS.md` and `README.md` changed. Do not merge as part of this task.
